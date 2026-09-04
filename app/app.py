@@ -4,9 +4,7 @@ import joblib
 from pathlib import Path
 
 
-# ============================================================
-# PAGE CONFIGURATION
-# ============================================================
+
 
 st.set_page_config(
     page_title="Employee Productivity Predictor",
@@ -16,9 +14,6 @@ st.set_page_config(
 )
 
 
-# ============================================================
-# PROJECT PATHS
-# ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,27 +21,19 @@ MODEL_PATH = BASE_DIR / "models" / "final_model.pkl"
 X_TRAIN_PATH = BASE_DIR / "data" / "x_train.csv"
 
 
-# ============================================================
-# LOAD MODEL
-# ============================================================
+
 
 @st.cache_resource
 def load_model():
     return joblib.load(MODEL_PATH)
 
 
-# ============================================================
-# LOAD TRAINING DATA
-# ============================================================
 
 @st.cache_data
 def load_training_data():
     return pd.read_csv(X_TRAIN_PATH)
 
 
-# ============================================================
-# LOAD MODEL AND DATA
-# ============================================================
 
 try:
 
@@ -70,9 +57,7 @@ except Exception as e:
     st.stop()
 
 
-# ============================================================
-# HEADER
-# ============================================================
+# header
 
 st.title("📊 Employee Productivity Predictor")
 
@@ -86,9 +71,7 @@ st.markdown(
 st.divider()
 
 
-# ============================================================
-# GET MODEL FEATURES
-# ============================================================
+# get model features
 
 if hasattr(model, "feature_names_in_"):
 
@@ -98,10 +81,6 @@ else:
 
     features = list(X_train.columns)
 
-
-# ============================================================
-# CHECK MODEL FEATURES
-# ============================================================
 
 missing_features = [
     feature
@@ -121,10 +100,7 @@ if missing_features:
     st.stop()
 
 
-# ============================================================
-# CATEGORICAL / ORDINAL FEATURES
-# ============================================================
-
+# categorical features
 categorical_features = [
     "education_level",
     "stress_level",
@@ -133,9 +109,8 @@ categorical_features = [
 ]
 
 
-# ============================================================
-# INPUT SECTION
-# ============================================================
+#input
+
 
 st.header("👤 Employee Information")
 
@@ -145,23 +120,14 @@ st.caption(
 )
 
 
-# ============================================================
-# STORE INPUT VALUES
-# ============================================================
-
 input_values = {}
 
 
-# ============================================================
-# TWO COLUMN LAYOUT
-# ============================================================
 
 col1, col2 = st.columns(2)
 
 
-# ============================================================
-# CREATE INPUT FIELDS
-# ============================================================
+#input fields
 
 for i, feature in enumerate(features):
 
@@ -176,9 +142,7 @@ for i, feature in enumerate(features):
         )
 
 
-        # ====================================================
-        # CATEGORICAL / ORDINAL FEATURES
-        # ====================================================
+       
 
         if feature in categorical_features:
 
@@ -205,10 +169,6 @@ for i, feature in enumerate(features):
             )
 
 
-        # ====================================================
-        # NUMERICAL FEATURES
-        # ====================================================
-
         else:
 
             feature_data = X_train[feature].dropna()
@@ -216,10 +176,6 @@ for i, feature in enumerate(features):
             min_value = feature_data.min()
             max_value = feature_data.max()
 
-
-            # -----------------------------------------------
-            # INTEGER FEATURE
-            # -----------------------------------------------
 
             if pd.api.types.is_integer_dtype(
                 feature_data
@@ -236,9 +192,6 @@ for i, feature in enumerate(features):
                 )
 
 
-            # -----------------------------------------------
-            # FLOAT FEATURE
-            # -----------------------------------------------
 
             else:
 
@@ -256,9 +209,6 @@ for i, feature in enumerate(features):
         input_values[feature] = value
 
 
-# ============================================================
-# PREDICTION BUTTON
-# ============================================================
 
 st.write("")
 
@@ -269,15 +219,11 @@ predict_button = st.button(
 )
 
 
-# ============================================================
-# PREDICTION
-# ============================================================
+
 
 if predict_button:
 
-    # ========================================================
-    # CHECK FOR EMPTY INPUTS
-    # ========================================================
+   
 
     missing_values = [
         feature
@@ -313,26 +259,13 @@ if predict_button:
 
     else:
 
-        # ====================================================
-        # CREATE INPUT DATAFRAME
-        # ====================================================
 
         input_data = pd.DataFrame(
             [input_values],
             columns=features
         )
 
-
-        # ====================================================
-        # ENSURE COLUMN ORDER
-        # ====================================================
-
         input_data = input_data[features]
-
-
-        # ====================================================
-        # MAKE PREDICTION
-        # ====================================================
 
         try:
 
@@ -341,28 +274,17 @@ if predict_button:
             )[0]
 
 
-            # =================================================
-            # PREDICTION RESULT
-            # =================================================
-
             st.divider()
 
             st.header("🎯 Prediction Result")
 
 
-            # =================================================
-            # PRODUCTIVITY SCORE
-            # =================================================
-
+        
             st.metric(
                 label="Predicted Productivity Score",
                 value=f"{prediction:.2f}"
             )
 
-
-            # =================================================
-            # PRODUCTIVITY CATEGORY
-            # =================================================
 
             if prediction >= 80:
 
@@ -390,10 +312,6 @@ if predict_button:
                     "a low productivity level."
                 )
 
-
-            # =================================================
-            # ENTERED INFORMATION
-            # =================================================
 
             with st.expander(
                 "🔍 View Entered Employee Information"
@@ -426,9 +344,6 @@ if predict_button:
             )
 
 
-# ============================================================
-# FOOTER
-# ============================================================
 
 st.divider()
 
