@@ -14,10 +14,6 @@ __pycache__/
 .env
 .env.*
 
-# Trained models
-models/*.pkl
-models/*.joblib
-models/*.h5
 
 # Logs
 *.log
